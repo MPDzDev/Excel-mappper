@@ -125,11 +125,60 @@ function main() {
   try {
     const result = remapWithConfig(templatePath, inputPath, configPath, outputPath);
     
+    // Clear console output to remove duplicate messages
+    console.clear();
+    console.log('\n===== Excel/CSV Data Remapper =====');
+    
     console.log('\n✅ Remapping completed successfully!');
     console.log(`Processed ${result.stats.totalRows} rows of data`);
-    console.log(`Errors: ${result.stats.errorRows}`);
-    console.log(`Warnings: ${result.stats.warnings}`);
+    
+    // Process and display issues without duplication
+    const issues = [];
+    
+    // Add ID validation issues
+    if (result.validation && result.validation.validationMessages) {
+      result.validation.validationMessages.forEach(msg => {
+        issues.push({
+          type: 'ID Validation',
+          message: msg
+        });
+      });
+    }
+    
+    // Add CSV parsing issues (de-duplicated)
+    if (result.stats.parseErrors) {
+      result.stats.parseErrors.forEach(err => {
+        issues.push({
+          type: 'CSV Format',
+          message: `Row ${err.row}: ${err.message}`
+        });
+      });
+    }
+    
+    // If we have issues, display them in a clean format
+    if (issues.length > 0) {
+      console.log(`\n⚠️ Issues Found: ${issues.length}`);
+      
+      // Group issues by type
+      const issuesByType = {};
+      issues.forEach(issue => {
+        if (!issuesByType[issue.type]) {
+          issuesByType[issue.type] = [];
+        }
+        issuesByType[issue.type].push(issue.message);
+      });
+      
+      // Display issues by type
+      Object.keys(issuesByType).forEach(type => {
+        console.log(`\n${type} Issues:`);
+        issuesByType[type].forEach(message => {
+          console.log(`  - ${message}`);
+        });
+      });
+    }
+    
     console.log(`\nOutput file saved to: ${outputPath}`);
+    
   } catch (error) {
     console.error('\n❌ Error during remapping:', error.message);
     process.exit(1);

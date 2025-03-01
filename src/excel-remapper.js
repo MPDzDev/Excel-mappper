@@ -82,6 +82,14 @@ function remapData(templateFilePath, inputFilePath, configObj, outputFilePath = 
   let inputRows;
   console.log(`Loading input data file: ${inputFilePath}`);
   
+  // Statistics for processing report
+  const stats = {
+    totalRows: 0,
+    errorRows: 0,
+    warnings: 0,
+    parseErrors: []
+  };
+  
   if (isInputCSV) {
     const dataContent = fs.readFileSync(inputFilePath, 'utf8');
     
@@ -91,15 +99,32 @@ function remapData(templateFilePath, inputFilePath, configObj, outputFilePath = 
       header: true, // We want objects with column names as keys for data
       escapeChar: '\\', // Handle escaped quotes
       skipEmptyLines: true,
-      comments: false, // Don't treat any lines as comments
-      error: (error) => {
-        console.error("CSV Parse Error:", error);
-      }
+      comments: false // Don't treat any lines as comments
     });
     
+    // Store parse errors without duplicates
     if (parsedData.errors.length > 0) {
-      console.error('Errors parsing input CSV:', parsedData.errors);
-      console.error('First 3 errors:', parsedData.errors.slice(0, 3));
+      // Only log errors in verbose mode or if there are new error types
+      const uniqueErrors = [];
+      const seen = new Set();
+      
+      parsedData.errors.forEach(err => {
+        const errorKey = `${err.type}:${err.message}:${err.row}`;
+        if (!seen.has(errorKey)) {
+          seen.add(errorKey);
+          uniqueErrors.push(err);
+        }
+      });
+      
+      // Only store unique errors
+      stats.parseErrors = uniqueErrors.map(err => ({
+        type: err.type,
+        message: err.message,
+        row: err.row
+      }));
+      
+      // Add unique parse errors to warnings count
+      stats.warnings += stats.parseErrors.length;
     }
     
     // Check for duplicate headers
@@ -135,12 +160,8 @@ function remapData(templateFilePath, inputFilePath, configObj, outputFilePath = 
   // Create result data with template headers
   const resultData = [templateHeaders];
   
-  // Statistics for processing report
-  const stats = {
-    totalRows: inputRows.length,
-    errorRows: 0,
-    warnings: 0
-  };
+  // Update total rows in stats
+  stats.totalRows = inputRows.length;
   
   // Get validation warnings from config if present
   if (configObj.validationWarnings) {
@@ -218,25 +239,20 @@ function remapData(templateFilePath, inputFilePath, configObj, outputFilePath = 
     console.log(`Remapping complete! Output saved to: ${outputFilePath}`);
   }
   
-  // Summary of the processing
+  // Summary of the processing - simplified
   console.log(`\n===== Remapping Summary =====`);
-  console.log(`  Total rows processed: ${stats.totalRows}`);
-  console.log(`  Rows with errors: ${stats.errorRows}`);
+  console.log(`Total rows processed: ${stats.totalRows}`);
   
-  // Calculate total warnings correctly
-  const processingWarnings = stats.warnings || 0;
-  const validationWarnings = stats.validationWarnings || 0;
-  const totalWarnings = processingWarnings + validationWarnings;
-  
-  // Show warnings breakdown 
-  console.log(`  Total warnings: ${totalWarnings}`);
-  
-  if (validationWarnings > 0) {
-    console.log(`    - ID validation warnings: ${validationWarnings}`);
+  if (stats.errorRows > 0) {
+    console.log(`Rows with errors: ${stats.errorRows}`);
   }
   
-  if (processingWarnings > 0) {
-    console.log(`    - Processing warnings: ${processingWarnings}`);
+  // Calculate unique warnings
+  const uniqueWarnings = (stats.parseErrors ? stats.parseErrors.length : 0) + 
+                        (stats.validationWarnings || 0);
+  
+  if (uniqueWarnings > 0) {
+    console.log(`Total warnings: ${uniqueWarnings}`);
   }
   
   // Return the result data and the workbook for further processing if needed

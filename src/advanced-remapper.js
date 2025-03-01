@@ -16,8 +16,6 @@ const { remapData, checkForDuplicates } = require('./excel-remapper');
  * @returns {Object} Validation results with any duplicate IDs found
  */
 function validateUniqueIds(inputRows, idColumns) {
-  console.log('Validating unique IDs...');
-  
   // Convert single column to array for consistency
   const columnsToCheck = Array.isArray(idColumns) ? idColumns : [idColumns];
   
@@ -30,8 +28,6 @@ function validateUniqueIds(inputRows, idColumns) {
   
   // Check each ID column
   columnsToCheck.forEach(columnName => {
-    console.log(`Checking column "${columnName}" for uniqueness...`);
-    
     // Store seen values and their row numbers
     const seenValues = {};
     const duplicates = [];
@@ -71,12 +67,9 @@ function validateUniqueIds(inputRows, idColumns) {
       
       // Add messages for each duplicate
       duplicates.forEach(dup => {
-        const message = `WARNING: Value "${dup.value}" in column "${columnName}" appears multiple times in rows: ${dup.rows.join(', ')}`;
-        console.warn(message);
+        const message = `Value "${dup.value}" in column "${columnName}" appears multiple times in rows: ${dup.rows.join(', ')}`;
         validationResults.validationMessages.push(message);
       });
-    } else {
-      console.log(`✓ Column "${columnName}" contains only unique values.`);
     }
   });
   
@@ -173,14 +166,6 @@ function remapWithConfig(templateFilePath, inputFilePath, configFilePath, output
   // Perform ID validation if idColumns are specified
   if (config.idColumns && config.idColumns.length > 0) {
     validationResults = validateUniqueIds(parsedData.data, config.idColumns);
-    
-    // Log validation results
-    if (!validationResults.isValid) {
-      console.warn(`\n⚠️ ID validation failed with ${validationResults.validationMessages.length} warnings`);
-      validationResults.validationMessages.forEach(msg => console.warn(`  ${msg}`));
-    } else {
-      console.log('✓ All ID columns contain unique values.');
-    }
   }
   
   // Perform the remapping
@@ -189,7 +174,6 @@ function remapWithConfig(templateFilePath, inputFilePath, configFilePath, output
   // Update the stats with validation warnings
   if (validationResults.validationMessages && validationResults.validationMessages.length > 0) {
     remapResult.stats.validationWarnings = validationResults.validationMessages.length;
-    remapResult.stats.warnings += validationResults.validationMessages.length;
   }
   
   // Add validation results to the returned object
@@ -213,37 +197,56 @@ function runFromCommandLine() {
   try {
     const result = remapWithConfig(templateFile, inputFile, configFile, outputFile);
     
-    // Prepare detailed summary
-    console.log(`\n===== Remapping Summary =====`);
-    console.log(`✅ Remapping completed successfully!`);
+    console.log('\n✅ Remapping completed successfully!');
     console.log(`Processed ${result.stats.totalRows} rows of data`);
-    console.log(`Processing errors: ${result.stats.errorRows}`);
     
-    // Show detailed warnings breakdown
-    const validationWarnings = result.stats.validationWarnings || 0;
-    const otherWarnings = (result.stats.warnings || 0) - validationWarnings;
+    // Process and display issues without duplication
+    const issues = [];
     
-    console.log(`Total warnings: ${result.stats.warnings || 0}`);
-    if (validationWarnings > 0) {
-      console.log(`  - ID validation warnings: ${validationWarnings}`);
-    }
-    if (otherWarnings > 0) {
-      console.log(`  - Other warnings: ${otherWarnings}`);
-    }
-    
-    console.log(`Output file saved to: ${outputFile}`);
-    
-    // Report validation results in more detail if there are issues
-    if (!result.validation.isValid) {
-      console.warn(`\n===== ID Validation Issues =====`);
-      result.validation.duplicates.forEach(dupInfo => {
-        console.warn(`⚠️ Found duplicate values in column "${dupInfo.column}":`);
-        dupInfo.duplicateValues.forEach((dup, idx) => {
-          console.warn(`  ${idx+1}. Value "${dup.value}" appears in rows: ${dup.rows.join(', ')}`);
+    // Add ID validation issues
+    if (result.validation && result.validation.validationMessages) {
+      result.validation.validationMessages.forEach(msg => {
+        issues.push({
+          type: 'ID Validation',
+          message: msg
         });
       });
-      console.warn(`\nNote: These ID validation warnings are included in the total warnings count.`);
     }
+    
+    // Add CSV parsing issues (de-duplicated)
+    if (result.stats.parseErrors) {
+      result.stats.parseErrors.forEach(err => {
+        issues.push({
+          type: 'CSV Format',
+          message: `Row ${err.row}: ${err.message}`
+        });
+      });
+    }
+    
+    // If we have issues, display them in a clean format
+    if (issues.length > 0) {
+      console.log(`\n⚠️ Issues Found: ${issues.length}`);
+      
+      // Group issues by type
+      const issuesByType = {};
+      issues.forEach(issue => {
+        if (!issuesByType[issue.type]) {
+          issuesByType[issue.type] = [];
+        }
+        issuesByType[issue.type].push(issue.message);
+      });
+      
+      // Display issues by type
+      Object.keys(issuesByType).forEach(type => {
+        console.log(`\n${type} Issues:`);
+        issuesByType[type].forEach(message => {
+          console.log(`  - ${message}`);
+        });
+      });
+    }
+    
+    console.log(`\nOutput file saved to: ${outputFile}`);
+    
   } catch (error) {
     console.error('Error during remapping:', error.message);
     process.exit(1);
