@@ -1,27 +1,21 @@
 {
-    "csvOptions": {
-      "delimiter": ";",
-      "quoteChar": "\"",
-      "header": true,
-      "skipEmptyLines": true,
-      "dynamicTyping": false
-    },
-    "fieldMappings": {
-      "CustomerID": "row => row['id']",
-      "FirstName": "row => row['first_name']",
-      "LastName": "row => row['last_name']",
-      "Email": "row => row['email']",
-      "Phones": "row => formatPhoneNumber(row['phone'])",
-      "Address": "row => `${row['address_line1']}, ${row['city']}, ${row['state']} ${row['zip']}`",
-      "JoinDate": "row => formatDate(row['registration_date'])",
-      "MembershipLevel": "row => mapMembershipLevel(row['tier'])",
-      "Status": "row => row['active'] === '1' ? 'Active' : 'Inactive'",
-      "TotalSpend": "row => calculateTotal(row)"
-    },
-    "helperFunctions": {
-      "formatPhoneNumber": "function(phone) { return phone ? phone.replace(/^(\\d{3})(\\d{3})(\\d{4})$/, '($1) $2-$3') : ''; }",
-      "formatDate": "function(date) { return date ? new Date(date).toISOString().split('T')[0] : ''; }",
-      "mapMembershipLevel": "function(tier) { const levels = {'1': 'Basic', '2': 'Silver', '3': 'Gold', '4': 'Platinum'}; return levels[tier] || 'Basic'; }",
-      "calculateTotal": "function(row) { return (Number(row['purchases'] || 0) * Number(row['avg_order'] || 0)).toFixed(2); }"
-    }
+  "csvOptions": {
+    "delimiter": ";",
+    "quoteChar": "\"",
+    "header": true,
+    "skipEmptyLines": true,
+    "dynamicTyping": false
+  },
+  "fieldMappings": {
+    "CustomerID": "row => row['id']",
+    "FullName": "row => `${row['first_name']} ${row['last_name']}`",
+    "EmailAddress": "row => row['email']",
+    "Phone": "row => 'N/A'",
+    "Status": "row => row['active'] === '1' ? 'Active' : 'Inactive'",
+    "TotalOrders": "row => row['orders']",
+    "JoinDate": "row => formatDate(row['signup_date'])"
+  },
+  "helperFunctions": {
+    "formatDate": "function(date) { return date ? new Date(date).toISOString().split('T')[0] : ''; }"
   }
+}
