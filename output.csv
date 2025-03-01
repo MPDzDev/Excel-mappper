@@ -1,0 +1,11 @@
+CustomerID;FullName;EmailAddress;Phone;Status;TotalOrders;JoinDate
+001;;;;Active;;
+002;;;;Active;;
+003;;;;Inactive;;
+004;;;;Active;;
+005;;;;Active;;
+006;;;;Inactive;;
+007;;;;Active;;
+008;;;;Active;;
+009;;;;Inactive;;
+010;;;;Active;;
