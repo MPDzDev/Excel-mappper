@@ -1,115 +1,139 @@
 /**
- * Simple Demo script for the Excel/CSV Data Remapper
+ * Demo script for ID validation in the Enhanced Excel/CSV Data Remapper
  * 
- * This script demonstrates how to use the remapper with a limited set of records.
- * 
- * How to run this demo:
- * From the project root directory:
- *   node examples/demo-remapper.js
+ * This script creates a test file with duplicate IDs to demonstrate validation.
  */
-const { remapWithConfig } = require('../src/advanced-remapper');
 const fs = require('fs');
 const Papa = require('papaparse');
+const { remapWithConfig, validateUniqueIds } = require('./enhanced-remapper');
 
 // Define file paths
-const TEMPLATE_FILE = '../data/templates/template.csv';
-const INPUT_FILE = '../data/input/source-data.csv';
-const CONFIG_FILE = '../config/mapping-config.json';
-const OUTPUT_FILE = '../data/output/remapped-output.csv';
+const TEMPLATE_FILE = 'template.csv';
+const DUPLICATE_DATA_FILE = 'duplicate-data.csv';
+const CONFIG_FILE = 'updated-mapping-config.json';
+const OUTPUT_FILE = 'duplicate-output.csv';
 
-console.log('Starting remapping demo...');
-console.log(`Template: ${TEMPLATE_FILE}`);
-console.log(`Input data: ${INPUT_FILE} (limited to 10 records)`);
-console.log(`Configuration: ${CONFIG_FILE}`);
-console.log(`Output: ${OUTPUT_FILE}`);
+console.log('Starting ID validation demo...');
 
-// Function to read and limit input data
-function readLimitedInputData(filePath, limit = 10) {
-  const fileContent = fs.readFileSync(filePath, 'utf8');
-  const parseResult = Papa.parse(fileContent, {
-    header: true,
-    skipEmptyLines: true,
-    delimiter: ';'
+// Create a test file with duplicate IDs
+function createTestFileWithDuplicates() {
+  console.log(`Creating test file with duplicate IDs: ${DUPLICATE_DATA_FILE}`);
+  
+  // Sample data with duplicate IDs
+  const sampleData = [
+    {
+      id: "001",
+      first_name: "John",
+      last_name: "Doe",
+      email: "john.doe@example.com",
+      notes: "Regular customer, no special notes",
+      active: "1",
+      orders: "12",
+      signup_date: "2023-01-15"
+    },
+    {
+      id: "002",
+      first_name: "Jane",
+      last_name: "Smith",
+      email: "jane.smith@example.com",
+      notes: "Prefers contact via email, not phone",
+      active: "1",
+      orders: "8",
+      signup_date: "2023-02-28"
+    },
+    {
+      id: "003", 
+      first_name: "Robert",
+      last_name: "Johnson",
+      email: "robert.j@example.com",
+      notes: "Important client; requires approval for orders > $500",
+      active: "0",
+      orders: "3",
+      signup_date: "2023-03-10"
+    },
+    {
+      id: "001", // Duplicate ID
+      first_name: "John",
+      last_name: "Duplicate",
+      email: "john.duplicate@example.com",
+      notes: "This is a duplicate ID",
+      active: "1",
+      orders: "5",
+      signup_date: "2023-01-20"
+    },
+    {
+      id: "002", // Duplicate ID
+      first_name: "Jane",
+      last_name: "Duplicate",
+      email: "jane.duplicate@example.com",
+      notes: "This is another duplicate ID",
+      active: "0",
+      orders: "2",
+      signup_date: "2023-02-15"
+    }
+  ];
+  
+  // Convert to CSV
+  const csv = Papa.unparse(sampleData, {
+    delimiter: ";",
+    header: true
   });
   
-  // Return only the first 'limit' rows
-  return parseResult.data.slice(0, limit);
+  // Write to file
+  fs.writeFileSync(DUPLICATE_DATA_FILE, csv);
+  
+  console.log(`Created test file with ${sampleData.length} rows (including duplicates)`);
+  return sampleData;
 }
 
-try {
-  // Read limited input data
-  const sourceData = readLimitedInputData(INPUT_FILE, 10);
-  console.log(`\nReading first ${sourceData.length} records from source data...`);
+// Run the validation demo
+function runValidationDemo() {
+  // Create test data
+  const testData = createTestFileWithDuplicates();
   
-  // Run the remapping with the limited data
-  const result = remapWithConfig(TEMPLATE_FILE, INPUT_FILE, CONFIG_FILE, OUTPUT_FILE);
+  // First, demonstrate direct validation
+  console.log('\n===== Direct Validation Demo =====');
+  const validationResult = validateUniqueIds(testData, ['id']);
   
-  console.log('\nRemapping successful!');
-  console.log(`Processed ${result.stats.totalRows} rows of data`);
-  console.log(`Errors: ${result.stats.errorRows}`);
-  console.log(`Warnings: ${result.stats.warnings}`);
-  console.log(`\nOutput file saved to: ${OUTPUT_FILE}`);
-  
-  // Show the mapping being used
-  console.log('\n===== Field Mappings =====');
-  const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
-  Object.entries(config.fieldMappings).forEach(([targetField, mapping]) => {
-    console.log(`${targetField} ← ${mapping}`);
-  });
-  
-  // Helper function to trim long values for display
-  function trimValue(value, maxLength = 15) {
-    value = String(value || '');
-    if (value.length <= maxLength) return value;
-    return value.substring(0, maxLength - 3) + '...';
+  if (!validationResult.isValid) {
+    console.log(`Found ${validationResult.validationMessages.length} validation issues:`);
+    validationResult.validationMessages.forEach(msg => console.log(`- ${msg}`));
+  } else {
+    console.log('No duplicate IDs found (this should not happen with our test data)');
   }
-
-  // Display source data for the first 3 records with column separators
-  console.log('\n===== Source Data (First 3 Records) =====');
-  if (sourceData.length > 0) {
-    const sourceHeaders = Object.keys(sourceData[0]);
+  
+  // Now, run the full remapping with ID validation
+  console.log('\n===== Full Remapping with ID Validation =====');
+  try {
+    const result = remapWithConfig(TEMPLATE_FILE, DUPLICATE_DATA_FILE, CONFIG_FILE, OUTPUT_FILE);
     
-    // Print headers with separators
-    let headerRow = '';
-    sourceHeaders.forEach(header => {
-      headerRow += trimValue(header).padEnd(15) + ' | ';
-    });
-    console.log(headerRow);
-    console.log('-'.repeat(headerRow.length));
+    console.log(`Remapping completed. Processed ${result.stats.totalRows} rows.`);
     
-    // Print first 3 rows of source data with separators
-    for (let i = 0; i < Math.min(3, sourceData.length); i++) {
-      let formattedRow = '';
-      sourceHeaders.forEach(header => {
-        formattedRow += trimValue(sourceData[i][header]).padEnd(15) + ' | ';
+    // Display validation results
+    if (!result.validation.isValid) {
+      console.log('\nID Validation Results:');
+      console.log(`Found ${result.validation.validationMessages.length} validation warnings:`);
+      result.validation.validationMessages.forEach(msg => {
+        console.log(`  ${msg}`);
       });
-      console.log(formattedRow);
+    } else {
+      console.log('No validation issues found (this should not happen with our test data)');
     }
+    
+    console.log(`\nOutput saved to: ${OUTPUT_FILE}`);
+    
+  } catch (error) {
+    console.error('Error during remapping:', error.message);
   }
-  
-  // Display transformed data with column separators
-  console.log('\n===== Transformed Data (First 3 Records) =====');
-  
-  // Print headers with separators
-  let headerRow = '';
-  result.headers.forEach(header => {
-    headerRow += trimValue(header).padEnd(15) + ' | ';
-  });
-  console.log(headerRow);
-  console.log('-'.repeat(headerRow.length));
-  
-  // Print first 3 rows of transformed data with separators
-  for (let i = 0; i < Math.min(3, result.data.length); i++) {
-    let formattedRow = '';
-    result.data[i].forEach(cell => {
-      formattedRow += trimValue(cell).padEnd(15) + ' | ';
-    });
-    console.log(formattedRow);
-  }
-  
-  console.log('\nDemo completed successfully!');
-  
-} catch (error) {
-  console.error('\nError during remapping demo:', error.message);
-  process.exit(1);
+}
+
+// Run the demo
+runValidationDemo();
+
+// Clean up
+console.log('\nDemo completed. Cleaning up...');
+if (fs.existsSync(DUPLICATE_DATA_FILE)) {
+  // fs.unlinkSync(DUPLICATE_DATA_FILE);
+  console.log(`You can inspect the test file at: ${DUPLICATE_DATA_FILE}`);
+  console.log(`You can see the output file at: ${OUTPUT_FILE}`);
 }

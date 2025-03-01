@@ -3,9 +3,10 @@ CustomerID;FullName;EmailAddress;Phone;Status;TotalOrders;JoinDate
 002;Jane Smith;jane.smith@example.com;N/A;Active;8;2023-02-28
 003;Robert Johnson;robert.j@example.com;N/A;Inactive;3;2023-03-10
 004;Maria Garcia;maria.g@example.com;N/A;Active;15;2022-11-05
+004;Maria Garcia;maria.g@example.com;N/A;Active;15;2022-11-05
 005;James Wilson;james.w@example.com;N/A;Active;6;2023-04-18
 006;Sarah Brown;sarah.b@example.com;N/A;Inactive;0;2023-05-22
 007;Michael Davis;michael.d@example.com;N/A;Active;9;2022-12-30
 008;Jennifer Miller;jennifer.m@example.com;N/A;Active;11;2023-01-25
-009;David Martinez;david.m@example.com;N/A;Inactive;2;2023-03-05
+009;"David Mart\"\"\"\"inez";david.m@example.com;N/A;Inactive;2;2023-03-05
 010;Jessica Taylor;jessica.t@example.com;N/A;Active;7;2023-02-12

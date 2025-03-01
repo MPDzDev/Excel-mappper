@@ -3,9 +3,10 @@ id;first_name;last_name;email;notes;active;orders;signup_date
 "002";"Jane";"Smith";"jane.smith@example.com";"Prefers contact via email, not phone";1;8;2023-02-28
 "003";"Robert";"Johnson";"robert.j@example.com";"Important client; requires approval for orders > $500";0;3;2023-03-10
 "004";"Maria";"Garcia";"maria.g@example.com";"Has company discount; apply code ABC123";1;15;2022-11-05
+"004";"Maria";"Garcia";"maria.g@example.com";"Has company discount; apply code ABC123";1;15;2022-11-05
 "005";"James";"Wilson";"james.w@example.com";"Shipping address: 123 Main St; Apt 4B, Springfield";1;6;2023-04-18
 "006";"Sarah";"Brown";"sarah.b@example.com";"New customer, referred by Jane Smith";0;0;2023-05-22
 "007";"Michael";"Davis";"michael.d@example.com";"Returns policy: 30 days, original packaging required";1;9;2022-12-30
 "008";"Jennifer";"Miller";"jennifer.m@example.com";"Special instructions: \"Call before delivery\"";1;11;2023-01-25
-"009";"David";"Martinez";"david.m@example.com";"Corporate account; ref: CORP-009, invoice monthly";0;2;2023-03-05
+"009";"David";"Mart""""inez";"david.m@example.com";"Corporate account; ref: CORP-009, invoice monthly";0;2;2023-03-05
 "010";"Jessica";"Taylor";"jessica.t@example.com";"Wants catalog by mail; send to: 456 Oak Dr, Apt 7; Rivertown";1;7;2023-02-12

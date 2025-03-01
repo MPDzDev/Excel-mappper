@@ -6,6 +6,7 @@
     "skipEmptyLines": true,
     "dynamicTyping": false
   },
+  "idColumns": ["id"],
   "fieldMappings": {
     "CustomerID": "row => row['id']",
     "FullName": "row => `${row['first_name']} ${row['last_name']}`",

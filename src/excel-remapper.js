@@ -142,6 +142,11 @@ function remapData(templateFilePath, inputFilePath, configObj, outputFilePath = 
     warnings: 0
   };
   
+  // Get validation warnings from config if present
+  if (configObj.validationWarnings) {
+    stats.validationWarnings = configObj.validationWarnings;
+  }
+  
   // Process each row from the input file
   inputRows.forEach((dataRow, rowIndex) => {
     const resultRow = [];
@@ -214,10 +219,25 @@ function remapData(templateFilePath, inputFilePath, configObj, outputFilePath = 
   }
   
   // Summary of the processing
-  console.log(`Remapping summary:`);
+  console.log(`\n===== Remapping Summary =====`);
   console.log(`  Total rows processed: ${stats.totalRows}`);
   console.log(`  Rows with errors: ${stats.errorRows}`);
-  console.log(`  Total warnings: ${stats.warnings}`);
+  
+  // Calculate total warnings correctly
+  const processingWarnings = stats.warnings || 0;
+  const validationWarnings = stats.validationWarnings || 0;
+  const totalWarnings = processingWarnings + validationWarnings;
+  
+  // Show warnings breakdown 
+  console.log(`  Total warnings: ${totalWarnings}`);
+  
+  if (validationWarnings > 0) {
+    console.log(`    - ID validation warnings: ${validationWarnings}`);
+  }
+  
+  if (processingWarnings > 0) {
+    console.log(`    - Processing warnings: ${processingWarnings}`);
+  }
   
   // Return the result data and the workbook for further processing if needed
   return {
