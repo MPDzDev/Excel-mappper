@@ -46,15 +46,18 @@ function validateUniqueIds(inputRows, idColumns) {
       
       if (seenValues[valueStr]) {
         // Found a duplicate
+        // Add 2 for CSV consistency: +1 for 0-indexing, +1 for header row
+        const rowNum = index + 2;
         duplicates.push({
           value: valueStr,
-          rows: [...seenValues[valueStr], index + 1]  // +1 for human-readable row numbers
+          rows: [...seenValues[valueStr], rowNum]
         });
-        seenValues[valueStr].push(index + 1);
+        seenValues[valueStr].push(rowNum);
         validationResults.isValid = false;
       } else {
         // First time seeing this value
-        seenValues[valueStr] = [index + 1];
+        // Add 2 to match CSV line numbers
+        seenValues[valueStr] = [index + 2];
       }
     });
     

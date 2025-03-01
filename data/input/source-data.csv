@@ -7,6 +7,16 @@ id;first_name;last_name;email;notes;active;orders;signup_date
 "005";"James";"Wilson";"james.w@example.com";"Shipping address: 123 Main St; Apt 4B, Springfield";1;6;2023-04-18
 "006";"Sarah";"Brown";"sarah.b@example.com";"New customer, referred by Jane Smith";0;0;2023-05-22
 "007";"Michael";"Davis";"michael.d@example.com";"Returns policy: 30 days, original packaging required";1;9;2022-12-30
-"008";"Jennifer";"Miller";"jennifer.m@example.com";"Special instructions: \"Call before delivery\"";1;11;2023-01-25
-"009";"David";"Mart""""inez";"david.m@example.com";"Corporate account; ref: CORP-009, invoice monthly";0;2;2023-03-05
-"010";"Jessica";"Taylor";"jessica.t@example.com";"Wants catalog by mail; send to: 456 Oak Dr, Apt 7; Rivertown";1;7;2023-02-12
+"008";"Jennifer";"Miller";"jennifer.m@example.com";"Special instructions: \"Call before delivery\"";"active";11;2023-01-25
+"009";"David";"Mart\"\"\"inez";"david.m@example.com";"Corporate account; ref: CORP-009, invoice monthly";0;2;2023-03-05
+"010";"Jessica";"Taylor";"jessica.t@example.com";;"1";7;2023-02-12
+"011";"Richard";"Moore";"richard.m@example.com";"Has an unclosed quote at the end;0;4;2023-05-01
+"012";"Emma";"Clark";"emma.c@example.com";"Has a "nested quote" in the middle";0;6;2023-04-15
+"013";"George";"Hall";"george.h@example.com";"Escaped \; semicolon in notes";1;9;2023-05-20
+"014";"Patricia";"Diaz";"patricia@example.com";"Special 'single' quotes used";1;12;2023-01-05
+"015";"Anthony";"Parker";;"Missing email but otherwise fine";1;8;2023-03-12
+"016";"NULL";"NULL";"thomas.a@example.com";"Literal NULL values in first and last name";1;7;2023-02-09
+"017";"Alice";"Smith";"alice.s@example.com";"Note with data beyond the field"abc;1;5;2023-01-10
+"018";"Paul";"White";"paul.w@example.com";"Has embedded line
+break in notes field";0;3;2023-04-22
+"017";"Alice";"Smith";"alice.s@example.com";"Note with data beyond the field"abc;1;5;2023-01-10

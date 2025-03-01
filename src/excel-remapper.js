@@ -112,7 +112,10 @@ function remapData(templateFilePath, inputFilePath, configObj, outputFilePath = 
         const errorKey = `${err.type}:${err.message}:${err.row}`;
         if (!seen.has(errorKey)) {
           seen.add(errorKey);
-          uniqueErrors.push(err);
+          uniqueErrors.push({
+            ...err,
+            row: err.row + 1
+          });
         }
       });
       
@@ -120,7 +123,7 @@ function remapData(templateFilePath, inputFilePath, configObj, outputFilePath = 
       stats.parseErrors = uniqueErrors.map(err => ({
         type: err.type,
         message: err.message,
-        row: err.row
+        row: err.row // Already adjusted above
       }));
       
       // Add unique parse errors to warnings count

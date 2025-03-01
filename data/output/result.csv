@@ -7,6 +7,13 @@ CustomerID;FullName;EmailAddress;Phone;Status;TotalOrders;JoinDate
 005;James Wilson;james.w@example.com;N/A;Active;6;2023-04-18
 006;Sarah Brown;sarah.b@example.com;N/A;Inactive;0;2023-05-22
 007;Michael Davis;michael.d@example.com;N/A;Active;9;2022-12-30
-008;Jennifer Miller;jennifer.m@example.com;N/A;Active;11;2023-01-25
-009;"David Mart\"\"\"\"inez";david.m@example.com;N/A;Inactive;2;2023-03-05
+008;Jennifer Miller;jennifer.m@example.com;N/A;Inactive;11;2023-01-25
+009;"David Mart\"\"\"inez";david.m@example.com;N/A;Inactive;2;2023-03-05
 010;Jessica Taylor;jessica.t@example.com;N/A;Active;7;2023-02-12
+011;Richard Moore;richard.m@example.com;N/A;Inactive;Clark;ERROR
+013;George Hall;george.h@example.com;N/A;Active;9;2023-05-20
+014;Patricia Diaz;patricia@example.com;N/A;Active;12;2023-01-05
+015;Anthony Parker;;N/A;Active;8;2023-03-12
+016;NULL NULL;thomas.a@example.com;N/A;Active;7;2023-02-09
+017;Alice Smith;alice.s@example.com;N/A;Inactive;White;ERROR
+017;Alice Smith;alice.s@example.com;N/A;Inactive;;
