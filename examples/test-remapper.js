@@ -3,13 +3,13 @@
  * 
  * This script demonstrates how to use the remapper with the sample files.
  */
-const { remapWithConfig } = require('./advanced-remapper');
+const { remapWithConfig } = require('../src/advanced-remapper');
 
 // Define file paths
-const TEMPLATE_FILE = 'template.csv';
-const INPUT_FILE = 'source-data.csv';
-const CONFIG_FILE = 'mapping-config.json';
-const OUTPUT_FILE = 'remapped-output.csv';
+const TEMPLATE_FILE = '../data/templates/template.csv';
+const INPUT_FILE = '../data/input/source-data.csv';
+const CONFIG_FILE = '../config/mapping-config.json';
+const OUTPUT_FILE = '../data/output/remapped-output.csv';
 
 console.log('Starting remapping test...');
 console.log(`Template: ${TEMPLATE_FILE}`);

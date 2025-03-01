@@ -17,13 +17,65 @@ This project provides a framework for converting data between different formats 
 ## Project Structure
 
 ```
-├── excel-remapper.js       # Core remapping functionality
-├── advanced-remapper.js    # Config-based extension
-├── demo-remapper.js        # Demo implementation
-├── source-data.csv         # Example input data
-├── template.csv            # Output template
-├── updated-mapping-config.json # Mapping configuration
-└── package.json            # Dependencies
+├── src/                      # Source code
+│   ├── excel-remapper.js     # Core functionality
+│   ├── advanced-remapper.js  # Config-based extension
+│
+├── examples/                 # Example implementations
+│   ├── demo-remapper.js      # Simple demo script
+│   ├── test-remapper.js      # Test implementation
+│
+├── config/                   # Configuration files
+│   ├── mapping-config.json   # Example mapping configuration
+│
+├── data/                     # Data files
+│   ├── input/                # Input data
+│   │   ├── source-data.csv   # Example input data
+│   ├── templates/            # Template files
+│   │   ├── template.csv      # Output template
+│   ├── output/               # Generated output
+│       ├── output.csv        # Sample output
+│       ├── remapped-output.csv # Generated output from examples
+│
+├── data-remapper.js          # Main entry point script
+├── package.json              # Project metadata and dependencies
+└── README.md                 # Project documentation
+```
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/excel-mapper.git
+cd excel-mapper
+
+# Install dependencies
+npm install
+```
+
+## Quick Start
+
+The easiest way to use the remapper is through the main entry point script:
+
+```bash
+# Basic usage
+node data-remapper.js <template-file> <input-file> <config-file> [output-file]
+
+# Example with the included sample files
+node data-remapper.js template.csv source-data.csv mapping-config.json my-output.csv
+```
+
+You can also use the npm scripts:
+
+```bash
+# Run the main remapper
+npm run remap template.csv source-data.csv mapping-config.json my-output.csv
+
+# Run the demo script
+npm run demo
+
+# Run the test script
+npm run test
 ```
 
 ## How It Works
@@ -56,35 +108,14 @@ The mapping configuration is a JSON file with the following structure:
 }
 ```
 
-## Getting Started
+## Organizing Your Files
 
-### Installation
+The remapper automatically looks for files in specific folders:
 
-```bash
-npm install
-```
-
-### Running the Demo
-
-```bash
-node demo-remapper.js
-```
-
-### Custom Usage
-
-```javascript
-const { remapWithConfig } = require('./advanced-remapper');
-
-// Define your file paths
-const templateFile = 'your-template.csv';
-const inputFile = 'your-data.csv';
-const configFile = 'your-config.json';
-const outputFile = 'your-output.csv';
-
-// Run the remapping
-const result = remapWithConfig(templateFile, inputFile, configFile, outputFile);
-console.log(`Processed ${result.stats.totalRows} rows of data`);
-```
+- **Templates**: Place your template files in `data/templates/`
+- **Input Data**: Place your input data files in `data/input/`
+- **Configurations**: Place your mapping configurations in `config/`
+- **Output**: Generated output will be saved to `data/output/`
 
 ## Example Transformation
 
@@ -119,6 +150,18 @@ CustomerID;FullName;Status
 - **Custom Transformations**: Write complex mapping functions for fields that need special processing
 - **Data Validation**: Add validation within mapping functions to ensure data quality
 - **Multi-File Processing**: Process multiple files in batch using the API
+
+## Running from Command Line
+
+You can run the remapper directly from the command line:
+
+```bash
+# Make the script executable (Unix-based systems)
+chmod +x data-remapper.js
+
+# Run the remapper
+./data-remapper.js template.csv source-data.csv mapping-config.json output.csv
+```
 
 ## Dependencies
 

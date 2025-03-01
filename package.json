@@ -1,14 +1,27 @@
 {
   "name": "excel-mapper",
   "version": "1.0.0",
-  "main": "advanced-remapper.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "A flexible tool for mapping data between different formats (Excel/CSV) using template-based transformation",
+  "main": "data-remapper.js",
+  "bin": {
+    "data-remapper": "data-remapper.js"
   },
-  "keywords": [],
+  "scripts": {
+    "start": "node data-remapper.js",
+    "demo": "node examples/demo-remapper.js",
+    "test": "node examples/test-remapper.js",
+    "remap": "node data-remapper.js"
+  },
+  "keywords": [
+    "csv",
+    "excel",
+    "data",
+    "transformation",
+    "mapping",
+    "conversion"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "papaparse": "^5.5.2",
     "xlsx": "^0.18.5"
